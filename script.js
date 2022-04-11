@@ -1,82 +1,109 @@
+const display = document.querySelector('#display');
+const btnRock = document.querySelector('#rock');
+const btnPaper = document.querySelector('#paper');
+const btnScissors = document.querySelector('#scissors');
+const messageBox = document.querySelector('#message-box');
+const computerDisplay = document.querySelector('#computer-display');
+
+let playerScore = 0;
+let computerScore = 0;
+let roundsPlayed = 0;
+
+btnRock.addEventListener('click', () => {
+    playRound('rock', computerPlay());
+});
+
+btnPaper.addEventListener('click', () => {
+    playRound('paper', computerPlay());
+});
+
+btnScissors.addEventListener('click', () => {
+    playRound('scissors', computerPlay());
+});
+
 function computerPlay() {
     let options = ['rock', 'paper', 'scissors'];
     let randomOption = Math.floor(Math.random() * options.length);
     return options[randomOption];
 }
 
-function promptPlayer() {
-    let input;
-    input = prompt('Rock, Paper or Scissors?');
-
-    if (input) {
-        input.toLowerCase();
-        return input;
-    }
-
-    else {
-        return 'error';
-    }
-}
-
-// decides who is the winner
-
 function playRound(playerSelection, computerSelection) {
 
-    // if player wins
     if ((playerSelection == 'rock' && computerSelection == 'scissors') ||
         (playerSelection == 'paper' && computerSelection == 'rock') ||
         (playerSelection == 'scissors' && computerSelection == 'paper')) {
-        console.log(`You win! ${playerSelection} beats ${computerSelection}`);
-        return 'player';
+        computerDisplay.textContent = computerSelection;
+        messageBox.textContent = 'You win the round!';
+        setScore('player');
     }
 
-    // if player loses
     else if ((playerSelection == 'rock' && computerSelection == 'paper') ||
         (playerSelection == 'paper' && computerSelection == 'scissors') ||
         (playerSelection == 'scissors' && computerSelection == 'rock')) {
-        console.log(`You lose! ${computerSelection} beats ${playerSelection}`);
-        return 'computer';
+        computerDisplay.textContent = computerSelection;
+        messageBox.textContent = 'Computer wins the round!';
+        setScore('computer');
     }
 
-    // if it's a tie
     else if (playerSelection == computerSelection) {
-        console.log('It\'s a tie!');
-        return 'tie';
+        computerDisplay.textContent = computerSelection;
+        messageBox.textContent = 'It\'s a tie!';
+        setScore('tie');
     }
 
     else {
-        return ('Error, please use only: rock / paper / scissors');
+        setScore('error at playRound()');
     }
 }
 
-function game() {
-    let playerScore = 0;
-    let computerScore = 0;
+function setScore(input) {
 
-    // score keeper
+    roundsPlayed++;
 
-    for (let i = 0; i < 5; i++) {
-        let result = playRound(promptPlayer(), computerPlay());
+    if (input == 'player') {
+        playerScore++;
+    }
 
-        switch (result) {
-            case 'player':
-                playerScore++;
-                break;
-            case 'computer':
-                computerScore++;
-                break;
-            case 'tie':
-                playerScore++;
-                computerScore++;
-                break;
-            default: console.log(result);
+    else if (input == 'computer') {
+        computerScore++;
+    }
+
+    else if (input == 'tie') {
+        console.log('It\'s a tie!');
+    }
+
+    else {
+        display.textContent = `${input}`; // displays error type
+    }
+
+    if (roundsPlayed >= 5) {
+
+        if (playerScore > computerScore) {
+            display.innerHTML = 'You Win!';
+            messageBox.textContent = '';
         }
+
+        else if (playerScore < computerScore) {
+            display.textContent = 'You Lose!';
+            messageBox.textContent = '';
+        }
+
+        else if (playerScore == computerScore) {
+            display.textContent = 'Tie game!';
+            messageBox.textContent = '';
+        }
+
+        roundsPlayed = 0;
+        playerScore = 0;
+        computerScore = 0;
     }
 
-    console.log(`Final score:
-                    Player: ${playerScore}
-                    Computer: ${computerScore}
-                    Refresh page to play again.`);
-}
+    else if (roundsPlayed < 5) {
 
-game();
+        display.textContent = `(Player) ${playerScore} - ${computerScore} (Computer)`;
+    }
+
+    else {
+        display.textContent = `error at setScore()`;
+    }
+}
